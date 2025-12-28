@@ -10,7 +10,7 @@ import (
 	"sync"
 
 	"github.com/dghubble/sling"
-	"github.com/traPtitech/DevOpsBot/pkg/config"
+	"github.com/traPtitech/sakura-DevOpsBot/pkg/config"
 	"golang.org/x/sync/errgroup"
 )
 

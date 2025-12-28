@@ -7,7 +7,7 @@ import (
 	"net/http"
 
 	"github.com/dghubble/sling"
-	"github.com/traPtitech/DevOpsBot/pkg/config"
+	"github.com/traPtitech/sakura-DevOpsBot/pkg/config"
 )
 
 func getConohaAPIToken() (string, error) {

@@ -6,8 +6,8 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/traPtitech/DevOpsBot/pkg/bot"
-	"github.com/traPtitech/DevOpsBot/pkg/utils"
+	"github.com/traPtitech/sakura-DevOpsBot/pkg/bot"
+	"github.com/traPtitech/sakura-DevOpsBot/pkg/utils"
 )
 
 // rootCmd represents the base command when called without any subcommands

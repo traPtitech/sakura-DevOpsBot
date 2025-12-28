@@ -8,7 +8,7 @@ import (
 
 	"github.com/dghubble/sling"
 	"github.com/samber/lo"
-	"github.com/traPtitech/DevOpsBot/pkg/config"
+	"github.com/traPtitech/sakura-DevOpsBot/pkg/config"
 )
 
 type restartCommand struct {

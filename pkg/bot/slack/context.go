@@ -2,12 +2,13 @@ package slack
 
 import (
 	"context"
-	"github.com/slack-go/slack"
-	"github.com/traPtitech/DevOpsBot/pkg/config"
-	"github.com/traPtitech/DevOpsBot/pkg/domain"
-	"github.com/traPtitech/DevOpsBot/pkg/utils"
-	"go.uber.org/zap"
 	"strings"
+
+	"github.com/slack-go/slack"
+	"github.com/traPtitech/sakura-DevOpsBot/pkg/config"
+	"github.com/traPtitech/sakura-DevOpsBot/pkg/domain"
+	"github.com/traPtitech/sakura-DevOpsBot/pkg/utils"
+	"go.uber.org/zap"
 )
 
 type slackContext struct {

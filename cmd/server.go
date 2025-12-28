@@ -3,7 +3,7 @@ package cmd
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/traPtitech/DevOpsBot/pkg/server"
+	"github.com/traPtitech/sakura-DevOpsBot/pkg/server"
 )
 
 var serverCmd = &cobra.Command{

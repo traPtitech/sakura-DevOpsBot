@@ -2,15 +2,16 @@ package traq
 
 import (
 	"context"
-	"github.com/traPtitech/DevOpsBot/pkg/config"
-	"github.com/traPtitech/DevOpsBot/pkg/domain"
+	"strings"
+
+	"github.com/traPtitech/sakura-DevOpsBot/pkg/config"
+	"github.com/traPtitech/sakura-DevOpsBot/pkg/domain"
 	"github.com/traPtitech/traq-ws-bot/payload"
 	"go.uber.org/zap"
-	"strings"
 
 	"github.com/traPtitech/go-traq"
 
-	"github.com/traPtitech/DevOpsBot/pkg/utils"
+	"github.com/traPtitech/sakura-DevOpsBot/pkg/utils"
 )
 
 type traqContext struct {

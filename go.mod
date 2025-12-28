@@ -1,4 +1,4 @@
-module github.com/traPtitech/DevOpsBot
+module github.com/traPtitech/sakura-DevOpsBot
 
 go 1.22
 
