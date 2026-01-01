@@ -1,5 +1,6 @@
 package server
 
+/*
 import (
 	"encoding/json"
 	"fmt"
@@ -70,3 +71,4 @@ func getConohaAPIToken() (string, error) {
 
 	return responseJson.Access.Token.Id, nil
 }
+*/
