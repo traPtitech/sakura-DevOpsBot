@@ -102,15 +102,10 @@ type CommandConfig struct {
 }
 
 type ServersConfig struct {
-	Conoha struct {
-		Origin struct {
-			Identity string `mapstructure:"identity" yaml:"identity"`
-			Compute  string `mapstructure:"compute" yaml:"compute"`
-		} `mapstructure:"origin" yaml:"origin"`
-		Username string `mapstructure:"username" yaml:"username"`
-		Password string `mapstructure:"password" yaml:"password"`
-		TenantID string `mapstructure:"tenantID" yaml:"tenantID"`
-	} `mapstructure:"conoha" yaml:"conoha"`
+	Sakura struct {
+		Origin      string `mapstructure:"origin" yaml:"origin"`
+		BearerToken string `mapstructure:"bearertoken" yaml:"bearertoken"`
+	} `mapstructure:"sakura" yaml:"sakura"`
 }
 
 func init() {
@@ -143,11 +138,8 @@ func init() {
 	viper.SetDefault("templates", nil)
 	viper.SetDefault("commands", nil)
 
-	viper.SetDefault("servers.conoha.origin.identity", "https://identity.tyo1.conoha.io/")
-	viper.SetDefault("servers.conoha.origin.compute", "https://compute.tyo1.conoha.io/")
-	viper.SetDefault("servers.conoha.username", "")
-	viper.SetDefault("servers.conoha.password", "")
-	viper.SetDefault("servers.conoha.tenantID", "")
+	viper.SetDefault("servers.sakura.origin", "https://secure.sakura.ad.jp/vps/api/v7/")
+	viper.SetDefault("servers.sakura.bearertoken", "")
 }
 
 func init() {
