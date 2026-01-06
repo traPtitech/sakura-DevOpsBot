@@ -9,6 +9,7 @@ type ServersCommand struct {
 	Commands map[string]command
 }
 
+// CLIにコマンドを登録
 func Compile() (*ServersCommand, error) {
 	cmd := &ServersCommand{}
 	cmd.Commands = make(map[string]command)
