@@ -83,7 +83,7 @@ type resultData struct {
 func (sc *hostsCommand) Execute(args []string) error {
 	req, err := sling.New().
 		Base(config.C.Servers.Sakura.Origin).
-		Get(config.C.Servers.Sakura.ApiURLPath + "servers").
+		Get(config.C.Servers.Sakura.ServersApiURLPath).
 		Add("Authorization", "Bearer "+config.C.Servers.Sakura.BearerToken).
 		Request()
 	if err != nil {

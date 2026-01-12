@@ -104,7 +104,7 @@ type CommandConfig struct {
 type ServersConfig struct {
 	Sakura struct {
 		Origin      string `mapstructure:"origin" yaml:"origin"`
-		ApiURLPath  string `mapstructure:"apiURLPath" yaml:"apiURLPath"`
+		ServersApiURLPath  string `mapstructure:"serversApiURLPath" yaml:"serversApiURLPath"`
 		BearerToken string `mapstructure:"bearerToken" yaml:"bearerToken"`
 	} `mapstructure:"sakura" yaml:"sakura"`
 }
@@ -139,8 +139,8 @@ func init() {
 	viper.SetDefault("templates", nil)
 	viper.SetDefault("commands", nil)
 
-	viper.SetDefault("servers.sakura.origin", "https://secure.sakura.ad.jp/")
-	viper.SetDefault("servers.sakura.apiURLPath", "vps/api/v7/")
+	viper.SetDefault("servers.sakura.origin", "https://secure.sakura.ad.jp")
+	viper.SetDefault("servers.sakura.serversApiURLPath", "/vps/api/v7/servers")
 	viper.SetDefault("servers.sakura.bearerToken", "")
 }
 
