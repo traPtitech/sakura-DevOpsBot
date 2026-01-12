@@ -1,6 +1,6 @@
 FROM --platform=$BUILDPLATFORM golang:1-alpine AS builder
 
-ENV CGO_ENABLED 0
+ENV CGO_ENABLED=0
 
 WORKDIR /work
 
