@@ -14,8 +14,6 @@ import (
 type restartCommand struct {
 }
 
-type m map[string]any
-
 func (sc *restartCommand) Execute(args []string) error {
 	if len(args) != 1 {
 		return fmt.Errorf("invalid arguments, expected server id")
