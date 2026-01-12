@@ -8,7 +8,7 @@ on:
       - '**'
 
 env:
-  IMAGE_NAME: dev-ops-bot
+  IMAGE_NAME: sakura-dev-ops-bot
 
 jobs:
   goreleaser:
