@@ -123,9 +123,9 @@ func (sc *hostsCommand) Execute(args []string) error {
 		if err != nil {
 			return fmt.Errorf("failed to get hosts: %w", err)
 		}
+		defer resp.Body.Close()
 
 		respBody, err := io.ReadAll(resp.Body)
-		resp.Body.Close()
 		if err != nil {
 			return fmt.Errorf("failed to read response body: %w", err)
 		}
