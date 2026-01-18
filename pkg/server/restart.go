@@ -52,7 +52,7 @@ func (sc *restartCommand) Execute(args []string) error {
 		return fmt.Errorf("incorrect status code: %s", resp.Status)
 	}
 
-	log.Printf("Server restart requested successfully: URL=%s, Status=%s", req.URL.String(), resp.Status)
+	log.Printf("Server restart requested successfully: ServerID=%d, Status=%s", serverID, resp.Status)
 
 	return nil
 }
