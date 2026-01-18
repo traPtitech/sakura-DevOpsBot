@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/dghubble/sling"
 	"github.com/traPtitech/sakura-DevOpsBot/pkg/config"
@@ -24,7 +25,7 @@ func (sc *restartCommand) Execute(args []string) error {
 		return fmt.Errorf("invalid arguments, server id must be an integer")
 	}
 
-	if len(config.C.Servers.Sakura.BearerToken) == 0 {
+	if len(strings.TrimSpace(config.C.Servers.Sakura.BearerToken)) == 0 {
 		return fmt.Errorf("API token has not been set yet")
 	}
 

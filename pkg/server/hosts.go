@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"sort"
+	"strings"
 
 	"github.com/dghubble/sling"
 	"github.com/traPtitech/sakura-DevOpsBot/pkg/config"
@@ -16,16 +17,16 @@ type hostsCommand struct {
 }
 
 type params struct {
-	Page                int64  `json:"page,omitempty"`
-	PerPage             int64  `json:"per_page,omitempty"`
-	ID                  string `json:"id,omitempty"`
-	Switch              int64  `json:"switch,omitempty"`
-	ZoneCode            string `json:"zone_code,omitempty"`
-	ServiceType         string `json:"service_type,omitempty"`
-	IPv4Address         string `json:"ipv4_address,omitempty"`
+	Page                 int64  `json:"page,omitempty"`
+	PerPage              int64  `json:"per_page,omitempty"`
+	ID                   string `json:"id,omitempty"`
+	Switch               int64  `json:"switch,omitempty"`
+	ZoneCode             string `json:"zone_code,omitempty"`
+	ServiceType          string `json:"service_type,omitempty"`
+	IPv4Address          string `json:"ipv4_address,omitempty"`
 	MonitoringResourceID string `json:"monitoring_resource_id,omitempty"`
-	Sort                string `json:"sort,omitempty"`
-	Search              string `json:"search,omitempty"`
+	Sort                 string `json:"sort,omitempty"`
+	Search               string `json:"search,omitempty"`
 }
 
 type serversResponse struct {
@@ -94,7 +95,7 @@ type resultData struct {
 }
 
 func (sc *hostsCommand) Execute(args []string) error {
-	if len(config.C.Servers.Sakura.BearerToken) == 0 {
+	if len(strings.TrimSpace(config.C.Servers.Sakura.BearerToken)) == 0 {
 		return fmt.Errorf("API token has not been set yet")
 	}
 
