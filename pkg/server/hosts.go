@@ -15,17 +15,17 @@ import (
 type hostsCommand struct {
 }
 
-type Params struct {
-	Page                   int64  `json:"page,omitempty"`
-	Per_page               int64  `json:"per_page,omitempty"`
-	Id                     string `json:"id,omitempty"`
-	Switch                 int64  `json:"switch,omitempty"`
-	Zone_code              string `json:"zone_code,omitempty"`
-	Service_type           string `json:"service_type,omitempty"`
-	Ipv4_address           string `json:"ipv4_address,omitempty"`
-	Monitoring_resource_id string `json:"monitoring_resource_id,omitempty"`
-	Sort                   string `json:"sort,omitempty"`
-	Search                 string `json:"search,omitempty"`
+type params struct {
+	Page                int64  `json:"page,omitempty"`
+	PerPage             int64  `json:"per_page,omitempty"`
+	ID                  string `json:"id,omitempty"`
+	Switch              int64  `json:"switch,omitempty"`
+	ZoneCode            string `json:"zone_code,omitempty"`
+	ServiceType         string `json:"service_type,omitempty"`
+	IPv4Address         string `json:"ipv4_address,omitempty"`
+	MonitoringResourceID string `json:"monitoring_resource_id,omitempty"`
+	Sort                string `json:"sort,omitempty"`
+	Search              string `json:"search,omitempty"`
 }
 
 type serversResponse struct {
