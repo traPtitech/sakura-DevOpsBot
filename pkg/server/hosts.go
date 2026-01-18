@@ -97,7 +97,7 @@ func (sc *hostsCommand) Execute(args []string) error {
 	datasPerPage := 100
 	req, err := sling.New().
 		Base(config.C.Servers.Sakura.Origin).
-		Get(config.C.Servers.Sakura.ServersApiURLPath).
+		Get(config.C.Servers.Sakura.ServersAPIURLPath).
 		Add("Authorization", "Bearer "+config.C.Servers.Sakura.BearerToken).
 		QueryStruct(&Params{Per_page: int64(datasPerPage)}).
 		Request()
