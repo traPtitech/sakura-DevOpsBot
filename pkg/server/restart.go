@@ -21,7 +21,7 @@ func (sc *restartCommand) Execute(args []string) error {
 
 	serverID, err := strconv.Atoi(args[0])
 	if err != nil {
-		return fmt.Errorf("invalid arguments, server id is must be integer")
+		return fmt.Errorf("invalid arguments, server id must be an integer")
 	}
 
 	req, err := sling.New().
