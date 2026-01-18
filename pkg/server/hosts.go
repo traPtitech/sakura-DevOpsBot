@@ -106,7 +106,7 @@ func (sc *hostsCommand) Execute(args []string) error {
 	datasPerPage := 100
 	servers := []resultData{}
 	page := 1
-	maxPages := 1000 // Prevent infinite loops
+	maxPages := 10
 
 	// Fetch all pages of results
 	for page <= maxPages {
