@@ -2,7 +2,6 @@ package server
 
 import (
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"strconv"
@@ -49,24 +48,11 @@ func (sc *restartCommand) Execute(args []string) error {
 	}
 	defer resp.Body.Close()
 
-	respBody, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return fmt.Errorf("failed to read response body: %w", err)
-	}
-
-	logStr := fmt.Sprintf(`Request
-- URL: %s
-
-Response
-- Header: %+v
-- Body: %s
-- Status: %s (Expected: 202)
-`, req.URL.String(), resp.Header, string(respBody), resp.Status)
-	log.Println(logStr)
-
 	if resp.StatusCode != http.StatusAccepted {
 		return fmt.Errorf("incorrect status code: %s", resp.Status)
 	}
+
+	log.Printf("Server restart requested successfully: URL=%s, Status=%s", req.URL.String(), resp.Status)
 
 	return nil
 }
