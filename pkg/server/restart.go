@@ -26,7 +26,7 @@ func (sc *restartCommand) Execute(args []string) error {
 
 	req, err := sling.New().
 		Base(config.C.Servers.Sakura.Origin).
-		Post(fmt.Sprintf("%s/%d/force-reboot", config.C.Servers.Sakura.ServersApiURLPath, serverID)).
+		Post(fmt.Sprintf("%s/%d/force-reboot", config.C.Servers.Sakura.ServersAPIURLPath, serverID)).
 		Add("Authorization", "Bearer "+config.C.Servers.Sakura.BearerToken).
 		Request()
 	if err != nil {
