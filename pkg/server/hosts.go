@@ -99,6 +99,10 @@ func (sc *hostsCommand) Execute(args []string) error {
 		return fmt.Errorf("API token has not been set yet")
 	}
 
+	if strings.HasPrefix(config.C.Servers.Sakura.ServersAPIURLPath, "/") {
+		config.C.Servers.Sakura.ServersAPIURLPath = "/" + config.C.Servers.Sakura.ServersAPIURLPath
+	}
+
 	datasPerPage := 100
 	req, err := sling.New().
 		Base(config.C.Servers.Sakura.Origin).

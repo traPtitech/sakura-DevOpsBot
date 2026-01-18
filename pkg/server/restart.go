@@ -29,6 +29,10 @@ func (sc *restartCommand) Execute(args []string) error {
 		return fmt.Errorf("API token has not been set yet")
 	}
 
+	if strings.HasPrefix(config.C.Servers.Sakura.ServersAPIURLPath, "/") {
+		config.C.Servers.Sakura.ServersAPIURLPath = "/" + config.C.Servers.Sakura.ServersAPIURLPath
+	}
+
 	req, err := sling.New().
 		Base(config.C.Servers.Sakura.Origin).
 		Post(fmt.Sprintf("%s/%d/force-reboot", config.C.Servers.Sakura.ServersAPIURLPath, serverID)).
