@@ -103,7 +103,7 @@ func (sc *hostsCommand) Execute(args []string) error {
 		Base(config.C.Servers.Sakura.Origin).
 		Get(config.C.Servers.Sakura.ServersAPIURLPath).
 		Add("Authorization", "Bearer "+config.C.Servers.Sakura.BearerToken).
-		QueryStruct(&Params{Per_page: int64(datasPerPage)}).
+		QueryStruct(&params{PerPage: int64(datasPerPage)}).
 		Request()
 	if err != nil {
 		return fmt.Errorf("failed to create hosts request: %w", err)
