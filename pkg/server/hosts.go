@@ -106,9 +106,10 @@ func (sc *hostsCommand) Execute(args []string) error {
 	datasPerPage := 100
 	servers := []resultData{}
 	page := 1
+	maxPages := 1000 // Prevent infinite loops
 
 	// Fetch all pages of results
-	for {
+	for page <= maxPages {
 		req, err := sling.New().
 			Base(config.C.Servers.Sakura.Origin).
 			Get(config.C.Servers.Sakura.ServersAPIURLPath).
@@ -123,9 +124,9 @@ func (sc *hostsCommand) Execute(args []string) error {
 		if err != nil {
 			return fmt.Errorf("failed to get hosts: %w", err)
 		}
-		defer resp.Body.Close()
 
 		respBody, err := io.ReadAll(resp.Body)
+		resp.Body.Close()
 		if err != nil {
 			return fmt.Errorf("failed to read response body: %w", err)
 		}
