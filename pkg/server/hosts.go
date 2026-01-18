@@ -94,6 +94,10 @@ type resultData struct {
 }
 
 func (sc *hostsCommand) Execute(args []string) error {
+	if (len(config.C.Servers.Sakura.BearerToken) == 0){
+		return fmt.Errorf("API token has not been set yet")
+	}
+
 	datasPerPage := 100
 	req, err := sling.New().
 		Base(config.C.Servers.Sakura.Origin).

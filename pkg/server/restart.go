@@ -24,6 +24,10 @@ func (sc *restartCommand) Execute(args []string) error {
 		return fmt.Errorf("invalid arguments, server id must be an integer")
 	}
 
+	if len(config.C.Servers.Sakura.BearerToken) == 0 {
+		return fmt.Errorf("API token has not been set yet")
+	}
+
 	req, err := sling.New().
 		Base(config.C.Servers.Sakura.Origin).
 		Post(fmt.Sprintf("%s/%d/force-reboot", config.C.Servers.Sakura.ServersAPIURLPath, serverID)).
