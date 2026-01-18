@@ -159,9 +159,9 @@ func (sc *hostsCommand) Execute(args []string) error {
 		return servers[i].Name < servers[j].Name
 	})
 
-	log.Printf("Server Name :\t Server ID, \t Zone Name, \t cpu cores, \t ipv4 address, \t ipv6 address, \t Memory Size (MiB), \t Storage Size (GiB) / type")
+	log.Printf("Server Name, \t Server ID, \t Zone Name, \t cpu cores, \t ipv4 address, \t ipv6 address, \t Memory Size (MiB), \t Storage Size (GiB) / type")
 	for _, server := range servers {
-		logMsg := fmt.Sprintf("%s :\t %d, \t %s, \t %d, \t %s, \t %s, \t %dMiB", server.Name, server.ID, server.Zone, server.CpuCores, server.Ipv4, server.Ipv6, server.MemoryMiB)
+		logMsg := fmt.Sprintf("%s, \t %d, \t %s, \t %d, \t %s, \t %s, \t %dMiB", server.Name, server.ID, server.Zone, server.CpuCores, server.Ipv4, server.Ipv6, server.MemoryMiB)
 		for _, storage := range server.Storage {
 			logMsg += fmt.Sprintf(", \t %dGiB / %s", storage.Size, storage.Type)
 		}
