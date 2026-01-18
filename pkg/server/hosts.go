@@ -65,14 +65,14 @@ type serverResponse struct {
 	} `json:"ipv4"`
 	Ipv6 struct {
 		Address     *string  `json:"address,omitempty"`
-		PrefixLen   *string  `json:"prefixlen,omitempty"`
+		PrefixLen   *int64   `json:"prefixlen,omitempty"`
 		Gateway     *string  `json:"gateway,omitempty"`
 		NameServers []string `json:"nameservers"`
 		HostName    *string  `json:"hostname,omitempty"`
 		PTR         *string  `json:"ptr,omitempty"`
 	} `json:"ipv6"`
 	Contract struct {
-		PlanCode    string `json:"plan_code"`
+		PlanCode    int64  `json:"plan_code"`
 		PlanName    string `json:"plan_name"`
 		ServiceCode string `json:"service_code"`
 	} `json:"contract"`
