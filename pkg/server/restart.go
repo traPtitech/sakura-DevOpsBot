@@ -22,7 +22,7 @@ func (sc *restartCommand) Execute(args []string) error {
 
 	serverID, err := strconv.Atoi(args[0])
 	if err != nil {
-		return fmt.Errorf("invalid arguments, server id must be an integer")
+		return fmt.Errorf("invalid arguments, server id must be an integer: %q", args[0])
 	}
 
 	if len(strings.TrimSpace(config.C.Servers.Sakura.BearerToken)) == 0 {
