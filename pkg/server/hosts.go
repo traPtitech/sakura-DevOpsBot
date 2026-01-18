@@ -15,6 +15,19 @@ import (
 type hostsCommand struct {
 }
 
+type Params struct {
+	Page                   int64  `json:"page,omitempty"`
+	Per_page               int64  `json:"per_page,omitempty"`
+	Id                     string `json:"id,omitempty"`
+	Switch                 int64  `json:"switch,omitempty"`
+	Zone_code              string `json:"zone_code,omitempty"`
+	Service_type           string `json:"service_type,omitempty"`
+	Ipv4_address           string `json:"ipv4_address,omitempty"`
+	Monitoring_resource_id string `json:"monitoring_resource_id,omitempty"`
+	Sort                   string `json:"sort,omitempty"`
+	Search                 string `json:"search,omitempty"`
+}
+
 type serversResponse struct {
 	Results  []serverResponse `json:"results"`
 	Count    int64            `json:"count"`
@@ -81,10 +94,12 @@ type resultData struct {
 }
 
 func (sc *hostsCommand) Execute(args []string) error {
+	datasPerPage := 100
 	req, err := sling.New().
 		Base(config.C.Servers.Sakura.Origin).
 		Get(config.C.Servers.Sakura.ServersApiURLPath).
 		Add("Authorization", "Bearer "+config.C.Servers.Sakura.BearerToken).
+		QueryStruct(&Params{Per_page: int64(datasPerPage)}).
 		Request()
 	if err != nil {
 		return fmt.Errorf("failed to create hosts request: %w", err)
@@ -146,6 +161,9 @@ func (sc *hostsCommand) Execute(args []string) error {
 			logMsg += fmt.Sprintf(", \t %dGiB(%s)", storage.Size, storage.Type)
 		}
 		log.Printf(logMsg)
+	}
+	if response.Count > int64(datasPerPage) {
+		log.Printf("Nod all results are displayed. Total count: %d", response.Count)
 	}
 
 	return nil
