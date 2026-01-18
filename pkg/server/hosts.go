@@ -125,14 +125,15 @@ func (sc *hostsCommand) Execute(args []string) error {
 			return fmt.Errorf("failed to get hosts: %w", err)
 		}
 
+		if resp.StatusCode != http.StatusOK {
+			resp.Body.Close()
+			return fmt.Errorf("invalid status code: %s (expected: 200)", resp.Status)
+		}
+
 		respBody, err := io.ReadAll(resp.Body)
 		resp.Body.Close()
 		if err != nil {
 			return fmt.Errorf("failed to read response body: %w", err)
-		}
-
-		if resp.StatusCode != http.StatusOK {
-			return fmt.Errorf("invalid status code: %s (expected: 200)", resp.Status)
 		}
 
 		var response serversResponse
