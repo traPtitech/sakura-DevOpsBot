@@ -103,9 +103,10 @@ type CommandConfig struct {
 
 type ServersConfig struct {
 	Sakura struct {
-		Origin      string `mapstructure:"origin" yaml:"origin"`
-		ServersAPIURLPath  string `mapstructure:"serversAPIURLPath" yaml:"serversAPIURLPath"`
-		BearerToken string `mapstructure:"bearerToken" yaml:"bearerToken"`
+		Origin string `mapstructure:"origin" yaml:"origin"`
+		// ServersAPIURLPath must start with "/"
+		ServersAPIURLPath string `mapstructure:"serversAPIURLPath" yaml:"serversAPIURLPath"`
+		BearerToken       string `mapstructure:"bearerToken" yaml:"bearerToken"`
 	} `mapstructure:"sakura" yaml:"sakura"`
 }
 
