@@ -6,8 +6,10 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 	"sort"
 	"strings"
+	"text/tabwriter"
 
 	"github.com/dghubble/sling"
 	"github.com/traPtitech/sakura-DevOpsBot/pkg/config"
@@ -175,14 +177,34 @@ func (sc *hostsCommand) Execute(args []string) error {
 		return servers[i].Name < servers[j].Name
 	})
 
-	log.Printf("Server Name, \t Server ID, \t Zone Name, \t cpu cores, \t ipv4 address, \t ipv6 address, \t Memory Size (MiB), \t Storage Size (GiB) / type")
+	// Create tabwriter for aligned output
+	// Parameters: output, minwidth, tabwidth, padding, padchar, flags
+	w := tabwriter.NewWriter(os.Stderr, 0, 4, 2, ' ', 0)
+	fmt.Fprintln(w, "Server Name\tServer ID\tZone Name\tCPU Cores\tIPv4 Address\tIPv6 Address\tMemory (MiB)\tStorage")
+	fmt.Fprintln(w, "-----------\t---------\t---------\t---------\t------------\t------------\t------------\t-------")
+
 	for _, server := range servers {
-		logMsg := fmt.Sprintf("%s, \t %d, \t %s, \t %d, \t %s, \t %s, \t %dMiB", server.Name, server.ID, server.Zone, server.CpuCores, server.Ipv4, server.Ipv6, server.MemoryMiB)
-		for _, storage := range server.Storage {
-			logMsg += fmt.Sprintf(", \t %dGiB / %s", storage.Size, storage.Type)
+		storageInfo := ""
+		for i, storage := range server.Storage {
+			if i > 0 {
+				storageInfo += ", "
+			}
+			storageInfo += fmt.Sprintf("%dGiB/%s", storage.Size, storage.Type)
 		}
-		log.Printf(logMsg)
+
+		fmt.Fprintf(w, "%s\t%d\t%s\t%d\t%s\t%s\t%d\t%s\n",
+			server.Name,
+			server.ID,
+			server.Zone,
+			server.CpuCores,
+			server.Ipv4,
+			server.Ipv6,
+			server.MemoryMiB,
+			storageInfo,
+		)
 	}
+
+	w.Flush()
 	log.Printf("Total servers: %d", len(servers))
 
 	return nil
