@@ -17,23 +17,23 @@ type hostsCommand struct {
 
 type serversResponse struct {
 	Results  []serverResponse `json:"results"`
-	Count    string           `json:"count"`
+	Count    int64            `json:"count"`
 	Next     *string          `json:"next,omitempty"`
 	Previous *string          `json:"previous,omitempty"`
 }
 
 type serverResponse struct {
-	ID            string `json:"id"`
+	ID            int64  `json:"id"`
 	Name          string `json:"name"`
 	Description   string `json:"description"`
 	ServiceType   string `json:"service_type"`
 	ServiceStatus string `json:"service_status"`
-	CPUCores      string `json:"cpu_cores"`
-	MemoryMiB     string `json:"memory_mebibytes"`
+	CPUCores      int64  `json:"cpu_cores"`
+	MemoryMiB     int64  `json:"memory_mebibytes"`
 	Storage       []struct {
-		Port    string `json:"port"`
+		Port    int64  `json:"port"`
 		Type    string `json:"type"`
-		SizeGiB string `json:"size_gibibytes"`
+		SizeGiB int64  `json:"size_gibibytes"`
 	} `json:"storage"`
 	Zone struct {
 		Code string `json:"code"`
@@ -67,15 +67,15 @@ type serverResponse struct {
 }
 
 type resultData struct {
-	ID        string
+	ID        int64
 	Zone      string
 	Name      string
 	Ipv4      string
 	Ipv6      string
-	CpuCores  string
-	MemoryMiB string
+	CpuCores  int64
+	MemoryMiB int64
 	Storage   []struct {
-		Size string
+		Size int64
 		Type string
 	}
 }
@@ -128,7 +128,7 @@ func (sc *hostsCommand) Execute(args []string) error {
 		}
 		for _, storage := range server.Storage {
 			serverData.Storage = append(serverData.Storage, struct {
-				Size string
+				Size int64
 				Type string
 			}{storage.SizeGiB, storage.Type})
 		}
