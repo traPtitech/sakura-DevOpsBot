@@ -28,7 +28,7 @@ func (sc *restartCommand) Execute(args []string) error {
 		return fmt.Errorf("API token has not been set yet")
 	}
 
-	if strings.HasPrefix(config.C.Servers.Sakura.ServersAPIURLPath, "/") {
+	if !strings.HasPrefix(config.C.Servers.Sakura.ServersAPIURLPath, "/") {
 		config.C.Servers.Sakura.ServersAPIURLPath = "/" + config.C.Servers.Sakura.ServersAPIURLPath
 	}
 
