@@ -104,59 +104,71 @@ func (sc *hostsCommand) Execute(args []string) error {
 	}
 
 	datasPerPage := 100
-	req, err := sling.New().
-		Base(config.C.Servers.Sakura.Origin).
-		Get(config.C.Servers.Sakura.ServersAPIURLPath).
-		Add("Authorization", "Bearer "+config.C.Servers.Sakura.BearerToken).
-		QueryStruct(&params{PerPage: int64(datasPerPage)}).
-		Request()
-	if err != nil {
-		return fmt.Errorf("failed to create hosts request: %w", err)
-	}
-
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return fmt.Errorf("failed to get hosts: %w", err)
-	}
-	defer resp.Body.Close()
-
-	respBody, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return fmt.Errorf("failed to read response body: %w", err)
-	}
-
-	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("invalid status code: %s (expected: 200)", resp.Status)
-	}
-
-	var response serversResponse
-	if err := json.Unmarshal(respBody, &response); err != nil {
-		return fmt.Errorf("failed to unmarshal response body: %w", err)
-	}
-
 	servers := []resultData{}
+	page := 1
+	maxPages := 1000 // Prevent infinite loops
 
-	for _, server := range response.Results {
-		serverData := resultData{
-			ID:        server.ID,
-			Zone:      server.Zone.Name,
-			Name:      server.Name,
-			Ipv4:      server.Ipv4.Address,
-			CpuCores:  server.CPUCores,
-			MemoryMiB: server.MemoryMiB,
+	// Fetch all pages of results
+	for page <= maxPages {
+		req, err := sling.New().
+			Base(config.C.Servers.Sakura.Origin).
+			Get(config.C.Servers.Sakura.ServersAPIURLPath).
+			Add("Authorization", "Bearer "+config.C.Servers.Sakura.BearerToken).
+			QueryStruct(&params{PerPage: int64(datasPerPage), Page: int64(page)}).
+			Request()
+		if err != nil {
+			return fmt.Errorf("failed to create hosts request: %w", err)
 		}
-		if server.Ipv6.Address != nil {
-			serverData.Ipv6 = *server.Ipv6.Address
-		} else {
-			serverData.Ipv6 = "null"
+
+		resp, err := http.DefaultClient.Do(req)
+		if err != nil {
+			return fmt.Errorf("failed to get hosts: %w", err)
 		}
-		for _, storage := range server.Storage {
-			serverData.Storage = append(serverData.Storage, struct {
-				Size int64
-				Type string
-			}{storage.SizeGiB, storage.Type})
+
+		if resp.StatusCode != http.StatusOK {
+			resp.Body.Close()
+			return fmt.Errorf("invalid status code: %s (expected: 200)", resp.Status)
 		}
-		servers = append(servers, serverData)
+
+		respBody, err := io.ReadAll(resp.Body)
+		resp.Body.Close()
+		if err != nil {
+			return fmt.Errorf("failed to read response body: %w", err)
+		}
+
+		var response serversResponse
+		if err := json.Unmarshal(respBody, &response); err != nil {
+			return fmt.Errorf("failed to unmarshal response body: %w", err)
+		}
+
+		for _, server := range response.Results {
+			serverData := resultData{
+				ID:        server.ID,
+				Zone:      server.Zone.Name,
+				Name:      server.Name,
+				Ipv4:      server.Ipv4.Address,
+				CpuCores:  server.CPUCores,
+				MemoryMiB: server.MemoryMiB,
+			}
+			if server.Ipv6.Address != nil {
+				serverData.Ipv6 = *server.Ipv6.Address
+			} else {
+				serverData.Ipv6 = "null"
+			}
+			for _, storage := range server.Storage {
+				serverData.Storage = append(serverData.Storage, struct {
+					Size int64
+					Type string
+				}{storage.SizeGiB, storage.Type})
+			}
+			servers = append(servers, serverData)
+		}
+
+		// Check if there are more pages
+		if response.Next == nil {
+			break
+		}
+		page++
 	}
 
 	sort.Slice(servers, func(i, j int) bool {
@@ -171,9 +183,7 @@ func (sc *hostsCommand) Execute(args []string) error {
 		}
 		log.Printf(logMsg)
 	}
-	if response.Count > int64(datasPerPage) {
-		log.Printf("Not all results are displayed. Total count: %d", response.Count)
-	}
+	log.Printf("Total servers: %d", len(servers))
 
 	return nil
 }
