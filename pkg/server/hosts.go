@@ -94,7 +94,7 @@ type resultData struct {
 }
 
 func (sc *hostsCommand) Execute(args []string) error {
-	if (len(config.C.Servers.Sakura.BearerToken) == 0){
+	if len(config.C.Servers.Sakura.BearerToken) == 0 {
 		return fmt.Errorf("API token has not been set yet")
 	}
 
@@ -158,11 +158,11 @@ func (sc *hostsCommand) Execute(args []string) error {
 		return servers[i].Name < servers[j].Name
 	})
 
-	log.Printf("Server Name :\t Server ID, \t Zone Name, \t cpu cores, \t ipv4 address, \t ipv6 address, \t Memory size, \t Storage size(Storage type)")
+	log.Printf("Server Name :\t Server ID, \t Zone Name, \t cpu cores, \t ipv4 address, \t ipv6 address, \t Memory Size (MiB), \t Storage Size (GiB) / type")
 	for _, server := range servers {
 		logMsg := fmt.Sprintf("%s :\t %d, \t %s, \t %d, \t %s, \t %s, \t %dMiB", server.Name, server.ID, server.Zone, server.CpuCores, server.Ipv4, server.Ipv6, server.MemoryMiB)
 		for _, storage := range server.Storage {
-			logMsg += fmt.Sprintf(", \t %dGiB(%s)", storage.Size, storage.Type)
+			logMsg += fmt.Sprintf(", \t %dGiB / %s", storage.Size, storage.Type)
 		}
 		log.Printf(logMsg)
 	}
