@@ -168,7 +168,7 @@ func (sc *hostsCommand) Execute(args []string) error {
 		log.Printf(logMsg)
 	}
 	if response.Count > int64(datasPerPage) {
-		log.Printf("Nod all results are displayed. Total count: %d", response.Count)
+		log.Printf("Not all results are displayed. Total count: %d", response.Count)
 	}
 
 	return nil
