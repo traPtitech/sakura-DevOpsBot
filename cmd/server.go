@@ -8,7 +8,7 @@ import (
 
 var serverCmd = &cobra.Command{
 	Use:          "server",
-	Short:        "ConoHa server manipulation",
+	Short:        "Sakura server manipulation",
 	SilenceUsage: true, // Do not display command usage when RunE returns error
 	RunE: func(cmd *cobra.Command, args []string) error {
 		s, err := server.Compile()

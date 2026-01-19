@@ -1,16 +1,16 @@
 # .goreleaser.yml
-project_name: DevOpsBot
+project_name: sakura-DevOpsBot
 before:
   hooks:
     - go mod download
 builds:
-  - binary: devops-bot
+  - binary: sakura-devops-bot
     env:
       - CGO_ENABLED=0
     ldflags:
       - -s
       - -w
-      - -X github.com/traPtitech/DevOpsBot/pkg/utils.version={{.Version}}
+      - -X github.com/traPtitech/sakura-DevOpsBot/pkg/utils.version={{.Version}}
     goos:
       - darwin
       - linux

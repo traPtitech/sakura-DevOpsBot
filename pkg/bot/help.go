@@ -21,7 +21,7 @@ func (h *HelpCommand) Execute(ctx domain.Context) error {
 
 	// Root usage
 	if len(args) == 0 {
-		lines = append(lines, fmt.Sprintf("## DevOpsBot v%s", utils.Version()))
+		lines = append(lines, fmt.Sprintf("## sakura-DevOpsBot v%s", utils.Version()))
 		lines = append(lines, "")
 		lines = append(lines, h.root.HelpMessage(0, true)...)
 		lines = append(lines, "")

@@ -15,7 +15,7 @@ func Compile() (*ServersCommand, error) {
 	cmd.Commands = make(map[string]command)
 
 	cmd.Commands["restart"] = &restartCommand{}
-	cmd.Commands["hosts"] = &hostsCommand{}
+	cmd.Commands["info"] = &hostsCommand{}
 
 	return cmd, nil
 }

@@ -12,11 +12,11 @@ import (
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:          "DevOpsBot",
+	Use:          "sakura-DevOpsBot",
 	Short:        "A ChatOps bot for executing arbitrary shell commands.",
 	SilenceUsage: true,
 	PreRun: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("DevOpsBot v%s initializing\n", utils.Version())
+		fmt.Printf("sakura-DevOpsBot v%s initializing\n", utils.Version())
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return bot.Run(cmd.Context())
