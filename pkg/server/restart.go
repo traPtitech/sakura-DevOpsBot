@@ -23,6 +23,9 @@ func (sc *restartCommand) Execute(args []string) error {
 	if err != nil {
 		return fmt.Errorf("invalid arguments, server id must be an integer: %q", args[0])
 	}
+	if serverID <= 0 {
+		return fmt.Errorf("invalid arguments, server id must be a positive integer: %q", args[0])
+	}
 
 	if len(strings.TrimSpace(config.C.Servers.Sakura.BearerToken)) == 0 {
 		return fmt.Errorf("API token has not been set yet")
