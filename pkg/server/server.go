@@ -1,4 +1,4 @@
-// Package server provides ConoHa server related operations
+// Package server provides Sakura server related operations
 package server
 
 import (

@@ -9,10 +9,10 @@ import (
 	"os"
 	"sort"
 	"strings"
-
-	"github.com/mattn/go-runewidth"
+	"time"
 
 	"github.com/dghubble/sling"
+	"github.com/mattn/go-runewidth"
 	"github.com/traPtitech/sakura-DevOpsBot/pkg/config"
 )
 
@@ -111,6 +111,7 @@ func (sc *hostsCommand) Execute(args []string) error {
 	page := 1
 	seen := map[int64]struct{}{}
 
+	client := &http.Client{Timeout: 15 * time.Second}
 	for {
 		req, err := sling.New().
 			Base(config.C.Servers.Sakura.Origin).
@@ -122,7 +123,7 @@ func (sc *hostsCommand) Execute(args []string) error {
 			return fmt.Errorf("failed to create hosts request: %w", err)
 		}
 
-		resp, err := http.DefaultClient.Do(req)
+		resp, err := client.Do(req)
 		if err != nil {
 			return fmt.Errorf("failed to get hosts: %w", err)
 		}
