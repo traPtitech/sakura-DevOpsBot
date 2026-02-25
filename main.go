@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/traPtitech/DevOpsBot/cmd"
+	"github.com/traPtitech/sakura-DevOpsBot/cmd"
 )
 
 func main() {

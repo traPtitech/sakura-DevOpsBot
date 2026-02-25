@@ -2,50 +2,44 @@ package server
 
 import (
 	"fmt"
-	"io"
 	"log"
 	"net/http"
+	"strconv"
+	"strings"
 
 	"github.com/dghubble/sling"
-	"github.com/samber/lo"
-	"github.com/traPtitech/DevOpsBot/pkg/config"
+	"github.com/traPtitech/sakura-DevOpsBot/pkg/config"
 )
 
 type restartCommand struct {
 }
 
-type m map[string]any
-
 func (sc *restartCommand) Execute(args []string) error {
-	if len(args) < 1 {
+	if len(args) != 1 {
 		return fmt.Errorf("invalid arguments, expected server id")
 	}
 
-	serverID := args[0]
-	args = args[1:]
-
-	if len(args) < 1 {
-		return fmt.Errorf("invalid arguments, expected restart type (SOFT or HARD)")
-	}
-
-	// args == [SOFT|HARD]
-	restartType := args[0]
-
-	if !lo.Contains([]string{"SOFT", "HARD"}, restartType) {
-		return fmt.Errorf("unknown restart type: %s", restartType)
-	}
-
-	token, err := getConohaAPIToken()
+	serverID, err := strconv.Atoi(args[0])
 	if err != nil {
-		return fmt.Errorf("failed to get conoha api token: %w", err)
+		return fmt.Errorf("invalid arguments, server id must be an integer: %q", args[0])
+	}
+	if serverID <= 0 {
+		return fmt.Errorf("invalid arguments, server id must be a positive integer: %q", args[0])
+	}
+
+	token := strings.TrimSpace(config.C.Servers.Sakura.BearerToken)
+	if token == "" {
+		return fmt.Errorf("API token has not been set yet")
+	}
+
+	if !strings.HasPrefix(config.C.Servers.Sakura.ServersAPIURLPath, "/") {
+		config.C.Servers.Sakura.ServersAPIURLPath = "/" + config.C.Servers.Sakura.ServersAPIURLPath
 	}
 
 	req, err := sling.New().
-		Base(config.C.Servers.Conoha.Origin.Compute).
-		Post(fmt.Sprintf("v2/%s/servers/%s/action", config.C.Servers.Conoha.TenantID, serverID)).
-		BodyJSON(m{"reboot": m{"type": args[0]}}).
-		Set("Accept", "application/json").
-		Set("X-Auth-Token", token).
+		Base(config.C.Servers.Sakura.Origin).
+		Post(fmt.Sprintf("%s/%d/force-reboot", config.C.Servers.Sakura.ServersAPIURLPath, serverID)).
+		Add("Authorization", "Bearer "+token).
 		Request()
 	if err != nil {
 		return fmt.Errorf("failed to create restart request: %w", err)
@@ -58,25 +52,11 @@ func (sc *restartCommand) Execute(args []string) error {
 	}
 	defer resp.Body.Close()
 
-	respBody, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return fmt.Errorf("failed to read response body: %w", err)
-	}
-
-	logStr := fmt.Sprintf(`Request
-- URL: %s
-- RestartType: %s
-
-Response
-- Header: %+v
-- Body: %s
-- Status: %s (Expected: 202)
-`, req.URL.String(), restartType, resp.Header, string(respBody), resp.Status)
-	log.Println(logStr)
-
 	if resp.StatusCode != http.StatusAccepted {
 		return fmt.Errorf("incorrect status code: %s", resp.Status)
 	}
+
+	log.Printf("Server restart requested successfully: ServerID=%d, Status=%s", serverID, resp.Status)
 
 	return nil
 }

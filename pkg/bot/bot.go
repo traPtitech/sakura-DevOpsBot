@@ -3,13 +3,14 @@ package bot
 import (
 	"context"
 	"fmt"
-	"github.com/traPtitech/DevOpsBot/pkg/bot/slack"
-	"github.com/traPtitech/DevOpsBot/pkg/config"
-	"github.com/traPtitech/DevOpsBot/pkg/domain"
+
+	"github.com/traPtitech/sakura-DevOpsBot/pkg/bot/slack"
+	"github.com/traPtitech/sakura-DevOpsBot/pkg/config"
+	"github.com/traPtitech/sakura-DevOpsBot/pkg/domain"
 
 	"go.uber.org/zap"
 
-	"github.com/traPtitech/DevOpsBot/pkg/bot/traq"
+	"github.com/traPtitech/sakura-DevOpsBot/pkg/bot/traq"
 )
 
 func Run(ctx context.Context) error {

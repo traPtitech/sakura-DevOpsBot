@@ -3,17 +3,18 @@ package slack
 import (
 	"context"
 	"fmt"
+	"log/slog"
+	"regexp"
+	"strings"
+
 	"github.com/kballard/go-shellquote"
 	"github.com/samber/lo"
 	"github.com/slack-go/slack"
 	"github.com/slack-go/slack/slackevents"
 	"github.com/slack-go/slack/socketmode"
-	"github.com/traPtitech/DevOpsBot/pkg/config"
-	"github.com/traPtitech/DevOpsBot/pkg/domain"
+	"github.com/traPtitech/sakura-DevOpsBot/pkg/config"
+	"github.com/traPtitech/sakura-DevOpsBot/pkg/domain"
 	"go.uber.org/zap"
-	"log/slog"
-	"regexp"
-	"strings"
 )
 
 const slashPrefix = "/"

@@ -1,4 +1,4 @@
-module github.com/traPtitech/DevOpsBot
+module github.com/traPtitech/sakura-DevOpsBot
 
 go 1.22
 
@@ -7,6 +7,7 @@ toolchain go1.22.0
 require (
 	github.com/dghubble/sling v1.4.2
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51
+	github.com/mattn/go-runewidth v0.0.20
 	github.com/samber/lo v1.47.0
 	github.com/slack-go/slack v0.15.0
 	github.com/spf13/cobra v1.8.1
@@ -14,10 +15,10 @@ require (
 	github.com/traPtitech/go-traq v0.0.0-20240725071454-97c7b85dc879
 	github.com/traPtitech/traq-ws-bot v1.2.1
 	go.uber.org/zap v1.27.0
-	golang.org/x/sync v0.7.0
 )
 
 require (
+	github.com/clipperhouse/uax29/v2 v2.2.0 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/gofrs/uuid/v5 v5.3.0 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect

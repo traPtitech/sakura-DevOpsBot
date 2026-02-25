@@ -11,9 +11,9 @@ import (
 
 	"github.com/samber/lo"
 
-	"github.com/traPtitech/DevOpsBot/pkg/config"
-	"github.com/traPtitech/DevOpsBot/pkg/domain"
-	"github.com/traPtitech/DevOpsBot/pkg/utils"
+	"github.com/traPtitech/sakura-DevOpsBot/pkg/config"
+	"github.com/traPtitech/sakura-DevOpsBot/pkg/domain"
+	"github.com/traPtitech/sakura-DevOpsBot/pkg/utils"
 )
 
 var (

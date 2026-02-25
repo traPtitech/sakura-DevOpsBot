@@ -6,3 +6,5 @@
 /config.yaml
 /dist
 /test.sh
+
+/docker-compose.yaml
