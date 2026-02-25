@@ -7,6 +7,7 @@ toolchain go1.22.0
 require (
 	github.com/dghubble/sling v1.4.2
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51
+	github.com/mattn/go-runewidth v0.0.20
 	github.com/samber/lo v1.47.0
 	github.com/slack-go/slack v0.15.0
 	github.com/spf13/cobra v1.8.1
@@ -17,6 +18,7 @@ require (
 )
 
 require (
+	github.com/clipperhouse/uax29/v2 v2.2.0 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/gofrs/uuid/v5 v5.3.0 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect

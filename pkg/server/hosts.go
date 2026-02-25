@@ -9,7 +9,8 @@ import (
 	"os"
 	"sort"
 	"strings"
-	"text/tabwriter"
+
+	"github.com/mattn/go-runewidth"
 
 	"github.com/dghubble/sling"
 	"github.com/traPtitech/sakura-DevOpsBot/pkg/config"
@@ -19,16 +20,16 @@ type hostsCommand struct {
 }
 
 type params struct {
-	Page                 int64  `json:"page,omitempty"`
-	PerPage              int64  `json:"per_page,omitempty"`
-	ID                   string `json:"id,omitempty"`
-	Switch               int64  `json:"switch,omitempty"`
-	ZoneCode             string `json:"zone_code,omitempty"`
-	ServiceType          string `json:"service_type,omitempty"`
-	IPv4Address          string `json:"ipv4_address,omitempty"`
-	MonitoringResourceID string `json:"monitoring_resource_id,omitempty"`
-	Sort                 string `json:"sort,omitempty"`
-	Search               string `json:"search,omitempty"`
+	Page                 int64  `json:"page,omitempty" url:"page,omitempty"`
+	PerPage              int64  `json:"per_page,omitempty" url:"per_page,omitempty"`
+	ID                   string `json:"id,omitempty" url:"id,omitempty"`
+	Switch               int64  `json:"switch,omitempty" url:"switch,omitempty"`
+	ZoneCode             string `json:"zone_code,omitempty" url:"zone_code,omitempty"`
+	ServiceType          string `json:"service_type,omitempty" url:"service_type,omitempty"`
+	IPv4Address          string `json:"ipv4_address,omitempty" url:"ipv4_address,omitempty"`
+	MonitoringResourceID string `json:"monitoring_resource_id,omitempty" url:"monitoring_resource_id,omitempty"`
+	Sort                 string `json:"sort,omitempty" url:"sort,omitempty"`
+	Search               string `json:"search,omitempty" url:"search,omitempty"`
 }
 
 type serversResponse struct {
@@ -108,10 +109,9 @@ func (sc *hostsCommand) Execute(args []string) error {
 	datasPerPage := 100
 	servers := []resultData{}
 	page := 1
-	maxPages := 10
+	seen := map[int64]struct{}{}
 
-	// Fetch all pages of results
-	for page <= maxPages {
+	for {
 		req, err := sling.New().
 			Base(config.C.Servers.Sakura.Origin).
 			Get(config.C.Servers.Sakura.ServersAPIURLPath).
@@ -144,6 +144,11 @@ func (sc *hostsCommand) Execute(args []string) error {
 		}
 
 		for _, server := range response.Results {
+			if _, ok := seen[server.ID]; ok {
+				continue
+			}
+			seen[server.ID] = struct{}{}
+
 			serverData := resultData{
 				ID:        server.ID,
 				Zone:      server.Zone.Name,
@@ -166,46 +171,87 @@ func (sc *hostsCommand) Execute(args []string) error {
 			servers = append(servers, serverData)
 		}
 
-		// Check if there are more pages
 		if response.Next == nil {
 			break
 		}
 		page++
+		if page > 100 {
+			return fmt.Errorf("too many pages: possible pagination loop")
+		}
 	}
 
 	sort.Slice(servers, func(i, j int) bool {
 		return servers[i].Name < servers[j].Name
 	})
 
-	// Create tabwriter for aligned output
-	// Parameters: output, minwidth, tabwidth, padding, padchar, flags
-	w := tabwriter.NewWriter(os.Stderr, 0, 4, 2, ' ', 0)
-	fmt.Fprintln(w, "Server Name\tServer ID\tZone Name\tCPU Cores\tIPv4 Address\tIPv6 Address\tMemory (MiB)\tStorage")
-	fmt.Fprintln(w, "-----------\t---------\t---------\t---------\t------------\t------------\t------------\t-------")
+	headers := []string{"NAME", "ID", "ZONE", "CPU", "IPv4", "IPv6", "MEM(MiB)", "STORAGE"}
+	rows := make([][]string, 0, len(servers))
 
 	for _, server := range servers {
-		storageInfo := ""
-		for i, storage := range server.Storage {
-			if i > 0 {
-				storageInfo += ", "
-			}
-			storageInfo += fmt.Sprintf("%dGiB/%s", storage.Size, storage.Type)
+		ipv6 := server.Ipv6
+		if ipv6 == "" || ipv6 == "null" {
+			ipv6 = "-"
 		}
-
-		fmt.Fprintf(w, "%s\t%d\t%s\t%d\t%s\t%s\t%d\t%s\n",
+		rows = append(rows, []string{
 			server.Name,
-			server.ID,
+			fmt.Sprintf("%d", server.ID),
 			server.Zone,
-			server.CpuCores,
+			fmt.Sprintf("%d", server.CpuCores),
 			server.Ipv4,
-			server.Ipv6,
-			server.MemoryMiB,
-			storageInfo,
-		)
+			ipv6,
+			fmt.Sprintf("%d", server.MemoryMiB),
+			formatStorage(server.Storage),
+		})
 	}
 
-	w.Flush()
+	printAlignedTable(os.Stdout, headers, rows)
 	log.Printf("Total servers: %d", len(servers))
 
 	return nil
+}
+
+func printAlignedTable(w io.Writer, headers []string, rows [][]string) {
+	widths := make([]int, len(headers))
+	for i, h := range headers {
+		widths[i] = runewidth.StringWidth(h)
+	}
+	for _, row := range rows {
+		for i, c := range row {
+			if cw := runewidth.StringWidth(c); cw > widths[i] {
+				widths[i] = cw
+			}
+		}
+	}
+
+	writeRow := func(cols []string) {
+		for i, c := range cols {
+			if i == len(cols)-1 {
+				fmt.Fprint(w, c)
+				continue
+			}
+			pad := widths[i] - runewidth.StringWidth(c) + 2
+			fmt.Fprint(w, c)
+			fmt.Fprint(w, strings.Repeat(" ", pad))
+		}
+		fmt.Fprintln(w)
+	}
+
+	writeRow(headers)
+	for _, row := range rows {
+		writeRow(row)
+	}
+}
+
+func formatStorage(storage []struct {
+	Size int64
+	Type string
+}) string {
+	if len(storage) == 0 {
+		return "-"
+	}
+	parts := make([]string, 0, len(storage))
+	for _, s := range storage {
+		parts = append(parts, fmt.Sprintf("%dGiB/%s", s.Size, s.Type))
+	}
+	return strings.Join(parts, ", ")
 }
