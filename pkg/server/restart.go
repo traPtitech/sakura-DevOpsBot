@@ -27,7 +27,8 @@ func (sc *restartCommand) Execute(args []string) error {
 		return fmt.Errorf("invalid arguments, server id must be a positive integer: %q", args[0])
 	}
 
-	if len(strings.TrimSpace(config.C.Servers.Sakura.BearerToken)) == 0 {
+	token := strings.TrimSpace(config.C.Servers.Sakura.BearerToken)
+	if token == "" {
 		return fmt.Errorf("API token has not been set yet")
 	}
 
@@ -38,7 +39,7 @@ func (sc *restartCommand) Execute(args []string) error {
 	req, err := sling.New().
 		Base(config.C.Servers.Sakura.Origin).
 		Post(fmt.Sprintf("%s/%d/force-reboot", config.C.Servers.Sakura.ServersAPIURLPath, serverID)).
-		Add("Authorization", "Bearer "+config.C.Servers.Sakura.BearerToken).
+		Add("Authorization", "Bearer "+token).
 		Request()
 	if err != nil {
 		return fmt.Errorf("failed to create restart request: %w", err)
