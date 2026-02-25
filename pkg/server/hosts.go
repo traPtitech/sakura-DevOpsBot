@@ -98,7 +98,8 @@ type resultData struct {
 }
 
 func (sc *hostsCommand) Execute(args []string) error {
-	if len(strings.TrimSpace(config.C.Servers.Sakura.BearerToken)) == 0 {
+	token := strings.TrimSpace(config.C.Servers.Sakura.BearerToken)
+	if token == "" {
 		return fmt.Errorf("API token has not been set yet")
 	}
 
@@ -115,7 +116,7 @@ func (sc *hostsCommand) Execute(args []string) error {
 		req, err := sling.New().
 			Base(config.C.Servers.Sakura.Origin).
 			Get(config.C.Servers.Sakura.ServersAPIURLPath).
-			Add("Authorization", "Bearer "+config.C.Servers.Sakura.BearerToken).
+			Add("Authorization", "Bearer "+token).
 			QueryStruct(&params{PerPage: int64(datasPerPage), Page: int64(page)}).
 			Request()
 		if err != nil {
