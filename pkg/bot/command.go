@@ -171,7 +171,11 @@ func compileCommands(templates map[string]string, cc []*config.CommandConfig, le
 
 func (dc *RootCommand) Execute(ctx domain.Context) error {
 	slog.Info("Executing command", "args", ctx.Args(), "executor", ctx.Executor())
-	name := ctx.Args()[0]
+	args := ctx.Args()
+	if len(args) == 0 {
+		return dc.cmds["help"].Execute(ctx)
+	}
+	name := args[0]
 
 	c, ok := dc.cmds[name]
 	if !ok {
