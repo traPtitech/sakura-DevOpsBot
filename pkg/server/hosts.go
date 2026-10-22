@@ -9,11 +9,18 @@ import (
 	"os"
 	"sort"
 	"strings"
+	"sync"
+	"time"
 
 	"github.com/mattn/go-runewidth"
 
 	"github.com/dghubble/sling"
 	"github.com/traPtitech/sakura-DevOpsBot/pkg/config"
+)
+
+const (
+	powerStatusConcurrency = 5
+	powerStatusTimeout     = 10 * time.Second
 )
 
 type hostsCommand struct {
@@ -79,19 +86,19 @@ type serverResponse struct {
 		PlanName    string `json:"plan_name"`
 		ServiceCode string `json:"service_code"`
 	} `json:"contract"`
-	PowerStatus     string  `json:"power_status"`
 	MigrationStatus *string `json:"migration_status,omitempty"`
 }
 
 type resultData struct {
-	ID        int64
-	Zone      string
-	Name      string
-	Ipv4      string
-	Ipv6      string
-	CpuCores  int64
-	MemoryMiB int64
-	Storage   []struct {
+	ID          int64
+	PowerStatus string
+	Zone        string
+	Name        string
+	Ipv4        string
+	Ipv6        string
+	CpuCores    int64
+	MemoryMiB   int64
+	Storage     []struct {
 		Size int64
 		Type string
 	}
@@ -103,9 +110,8 @@ func (sc *hostsCommand) Execute(args []string) error {
 		return fmt.Errorf("API token has not been set yet")
 	}
 
-	if !strings.HasPrefix(config.C.Servers.Sakura.ServersAPIURLPath, "/") {
-		config.C.Servers.Sakura.ServersAPIURLPath = "/" + config.C.Servers.Sakura.ServersAPIURLPath
-	}
+	origin := config.C.Servers.Sakura.Origin
+	serversPath := "/" + strings.Trim(config.C.Servers.Sakura.ServersAPIURLPath, "/")
 
 	datasPerPage := 100
 	servers := []resultData{}
@@ -114,8 +120,8 @@ func (sc *hostsCommand) Execute(args []string) error {
 
 	for {
 		req, err := sling.New().
-			Base(config.C.Servers.Sakura.Origin).
-			Get(config.C.Servers.Sakura.ServersAPIURLPath).
+			Base(origin).
+			Get(serversPath).
 			Add("Authorization", "Bearer "+token).
 			QueryStruct(&params{PerPage: int64(datasPerPage), Page: int64(page)}).
 			Request()
@@ -185,7 +191,9 @@ func (sc *hostsCommand) Execute(args []string) error {
 		return servers[i].Name < servers[j].Name
 	})
 
-	headers := []string{"NAME", "ID", "ZONE", "CPU", "IPv4", "IPv6", "MEM(MiB)", "STORAGE"}
+	fetchPowerStatuses(servers, origin, serversPath, token)
+
+	headers := []string{"NAME", "ID", "POWER", "ZONE", "CPU", "IPv4", "IPv6", "MEM(MiB)", "STORAGE"}
 	rows := make([][]string, 0, len(servers))
 
 	for _, server := range servers {
@@ -196,6 +204,7 @@ func (sc *hostsCommand) Execute(args []string) error {
 		rows = append(rows, []string{
 			server.Name,
 			fmt.Sprintf("%d", server.ID),
+			server.PowerStatus,
 			server.Zone,
 			fmt.Sprintf("%d", server.CpuCores),
 			server.Ipv4,
@@ -209,6 +218,60 @@ func (sc *hostsCommand) Execute(args []string) error {
 	log.Printf("Total servers: %d", len(servers))
 
 	return nil
+}
+
+func fetchPowerStatuses(servers []resultData, origin, serversPath, token string) {
+	client := &http.Client{Timeout: powerStatusTimeout}
+	limit := make(chan struct{}, powerStatusConcurrency)
+	var wg sync.WaitGroup
+	for i := range servers {
+		limit <- struct{}{}
+		wg.Add(1)
+		go func(index int) {
+			defer wg.Done()
+			defer func() { <-limit }()
+
+			status, err := fetchPowerStatus(client, origin, serversPath, token, servers[index].ID)
+			if err != nil {
+				servers[index].PowerStatus = "error"
+				log.Printf("Failed to get power status: ServerID=%d: %v", servers[index].ID, err)
+				return
+			}
+			servers[index].PowerStatus = status
+		}(i)
+	}
+	wg.Wait()
+}
+
+func fetchPowerStatus(client *http.Client, origin, serversPath, token string, serverID int64) (string, error) {
+	req, err := sling.New().
+		Base(origin).
+		Get(fmt.Sprintf("%s/%d/power-status", serversPath, serverID)).
+		Add("Authorization", "Bearer "+token).
+		Request()
+	if err != nil {
+		return "", fmt.Errorf("failed to create power status request: %w", err)
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", fmt.Errorf("failed to get power status: %w", err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("invalid status code: %s (expected: 200)", resp.Status)
+	}
+
+	var response struct {
+		Status string `json:"status"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
+		return "", fmt.Errorf("failed to decode power status: %w", err)
+	}
+	if response.Status == "" {
+		return "", fmt.Errorf("power status is missing or empty")
+	}
+	return response.Status, nil
 }
 
 func printAlignedTable(w io.Writer, headers []string, rows [][]string) {
