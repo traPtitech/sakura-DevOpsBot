@@ -16,7 +16,7 @@ var rootCmd = &cobra.Command{
 	Short:        "A ChatOps bot for executing arbitrary shell commands.",
 	SilenceUsage: true,
 	PreRun: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("sakura-DevOpsBot v%s initializing\n", utils.Version())
+		fmt.Printf("sakura-DevOpsBot %s initializing\n", utils.Version())
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return bot.Run(cmd.Context())

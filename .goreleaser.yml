@@ -10,7 +10,7 @@ builds:
     ldflags:
       - -s
       - -w
-      - -X github.com/traPtitech/sakura-DevOpsBot/pkg/utils.version={{.Version}}
+      - -X github.com/traPtitech/sakura-DevOpsBot/pkg/utils.version={{.Tag}}
     goos:
       - darwin
       - linux
